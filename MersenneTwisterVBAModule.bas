@@ -5,95 +5,95 @@ Option Explicit
 Const targetOutputColumn As String = "A"
 ' The subroutine "main" outputs 1000 iterations each of "genrand_int32()" and
 '  "genrand_real2()" to the text file "mt19937arVBAout.txt":
-Const NumOutputs As Long = 1000&
+Const NumOutputs As Long = 1000
 Const Filename As String = "mt19937arVBAout.txt"
 ' Likewise, the subroutine "mainXL" outputs
 '  (200 rows * 5 columns) = 1000 iterations each of "genrand_int32()" and
 '  "genrand_real2()" to an Excel spreadsheet.
-Const rdimension As Long = 200&
-Const cdimension As Long = 5&
+Const rdimension As Long = 200
+Const cdimension As Long = 5
 
 ' MASKING BIT or BITS used in the various functions below and various remarks:
 '******************************************************************************
-Const Bits0To1 As Long = &H3&         ' ((2^2) - (2^0))   = 3
-Const Bits0To2 As Long = &H7&         ' ((2^3) - 1)       = 7
-Const Bits0To3 As Long = &HF&         ' ((2^4) - 1)       = 15
-Const Bits0To4 As Long = &H1F&        ' ((2^5) - 1)       = 31
-Const Bits0To6 As Long = &H7F&        ' ((2^7) - 1)       = 127
-Const Bits0To8 As Long = &H1FF&       ' ((2^9) - 1)       = 511
-Const Bits0To10 As Long = &H7FF&      ' ((2^11) - 1)      = 2047
-Const Bits0To11 As Long = &HFFF&      ' ((2^12) - 1)      = 4095
-Const Bits0To12 As Long = &H1FFF&     ' ((2^13) - 1)      = 8191
-Const Bits0To13 As Long = &H3FFF&     ' ((2^14) - 1)      = 16383
-Const Bits0To14 As Long = &H7FFF&     ' ((2^15) - 1)      = 32767
+Const Bits0To1 As Long = 3
+Const Bits0To2 As Long = 7
+Const Bits0To3 As Long = 15
+Const Bits0To4 As Long = 31
+Const Bits0To6 As Long = 127
+Const Bits0To8 As Long = 511
+Const Bits0To10 As Long = 2047
+Const Bits0To11 As Long = 4095
+Const Bits0To12 As Long = 8191
+Const Bits0To13 As Long = 16383
+Const Bits0To14 As Long = 32767
 ' Appending a '&' after the constant is required, otherwise the VBA Editor
 '  treats "&HFFFF" as -1 instead of 65535.  See the link (last updated on
 '  February 27, 2014) for information: http://support.microsoft.com/kb/38888
-Const Bits0To15 As Long = &HFFFF&     ' ((2^16) - 1)      = 65535 (0x0000FFFF)
+Const Bits0To15 As Long = 65535
 '******************************************************************************
-Const Bits0To16 As Long = &H1FFFF     ' ((2^17) - 1)      = 131071
-Const Bits0To17 As Long = &H3FFFF     ' ((2^18) - 1)      = 262143
-Const Bits0To19 As Long = &HFFFFF     ' ((2^20) - 1)      = 1048575
-Const Bits0To20 As Long = &H1FFFFF    ' ((2^21) - 1)      = 2097151
-Const Bits0To21 As Long = &H3FFFFF    ' ((2^22) - 1)      = 4194303
-Const Bits0To22 As Long = &H7FFFFF    ' ((2^23) - 1)      = 8388607
-Const Bits0To23 As Long = &HFFFFFF    ' ((2^24) - 1)      = 16777215
-Const Bits0To24 As Long = &H1FFFFFF   ' ((2^25) - 1)      = 33554431
-Const Bits0To25 As Long = &H3FFFFFF   ' ((2^26) - 1)      = 67108863
-Const Bits0To27 As Long = &HFFFFFFF   ' ((2^28) - 1)      = 268435455
-Const Bits0To28 As Long = &H1FFFFFFF  ' ((2^29) - 1)      = 536870911
-Const Bits0To29 As Long = &H3FFFFFFF  ' ((2^30) - 1)      = 1073741823
+Const Bits0To16 As Long = 131071
+Const Bits0To17 As Long = 262143
+Const Bits0To19 As Long = 1048575
+Const Bits0To20 As Long = 2097151
+Const Bits0To21 As Long = 4194303
+Const Bits0To22 As Long = 8388607
+Const Bits0To23 As Long = 16777215
+Const Bits0To24 As Long = 33554431
+Const Bits0To25 As Long = 67108863
+Const Bits0To27 As Long = 268435455
+Const Bits0To28 As Long = 536870911
+Const Bits0To29 As Long = 1073741823
 ' This is the largest possible value that the Signed Long Data Type can take.
 ' "Bits0To30" and the name "LOWER_MASK" are the same as defined in the module.
-Const LOWER_MASK As Long = &H7FFFFFFF ' ((2^31) - 1)      = 2147483647
+Const LOWER_MASK As Long = 2147483647
 '******************************************************************************
 ' Mask all bits except for the least significant bit and the sign bit.
-Const Bits1To30 As Long = &H7FFFFFFE  ' ((2^31) - (2^1))  = 2147483646
+Const Bits1To30 As Long = 2147483646
 ' Mask all bits except for the 5 least significant bits and the sign bit.
-Const Bits5To30 As Long = &H7FFFFFE0  ' ((2^31) - (2^5))  = 2147483616
+Const Bits5To30 As Long = 2147483616
 ' Mask all bits except for the 6 least significant bits and the sign bit.
-Const Bits6To30 As Long = &H7FFFFFC0  ' ((2^31) - (2^6))  = 2147483584
+Const Bits6To30 As Long = 2147483584
 ' Mask all bits except for the 11 least significant bits and the sign bit.
-Const Bits11To30 As Long = &H7FFFF800 ' ((2^31) - (2^11)) = 2147481600
+Const Bits11To30 As Long = 2147481600
 ' Mask all bits except for the 18 least significant bits and the sign bit.
-Const Bits18To30 As Long = &H7FFC0000 ' ((2^31) - (2^18)) = 2147221504
+Const Bits18To30 As Long = 2147221504
 '******************************************************************************
 ' This could be "Bits0To0"
-Const Bit0 As Long = &H1&             ' (2^0)             = 1
-Const Bit1 As Long = &H2&             ' (2^1)             = 2
-Const Bit2 As Long = &H4&             ' (2^2)             = 4
-Const Bit3 As Long = &H8&             ' (2^3)             = 8
-Const Bit4 As Long = &H10&            ' (2^4)             = 16
-Const Bit5 As Long = &H20&            ' (2^5)             = 32
-Const Bit6 As Long = &H40&            ' (2^6)             = 64
-Const Bit7 As Long = &H80&            ' (2^7)             = 128
-Const Bit8 As Long = &H100&           ' (2^8)             = 256
-Const Bit9 As Long = &H200&           ' (2^9)             = 512
-Const Bit10 As Long = &H400&          ' (2^10)            = 1024
-Const Bit11 As Long = &H800&          ' (2^11)            = 2048
-Const Bit12 As Long = &H1000&         ' (2^12)            = 4096
-Const Bit13 As Long = &H2000&         ' (2^13)            = 8192
-Const Bit14 As Long = &H4000&         ' (2^14)            = 16384
+Const Bit0 As Long = 1
+Const Bit1 As Long = 2
+Const Bit2 As Long = 4
+Const Bit3 As Long = 8
+Const Bit4 As Long = 16
+Const Bit5 As Long = 32
+Const Bit6 As Long = 64
+Const Bit7 As Long = 128
+Const Bit8 As Long = 256
+Const Bit9 As Long = 512
+Const Bit10 As Long = 1024
+Const Bit11 As Long = 2048
+Const Bit12 As Long = 4096
+Const Bit13 As Long = 8192
+Const Bit14 As Long = 16384
 ' Appending a '&' after the constant is required, otherwise the VBA Editor
 '  treats "&H8000" as -32768 instead of 32768.
-Const Bit15 As Long = &H8000&         ' (2^15)            = 32768 (0x00008000)
+Const Bit15 As Long = 32768
 '******************************************************************************
-Const Bit16 As Long = &H10000         ' (2^16)            = 65536
-Const Bit17 As Long = &H20000         ' (2^17)            = 131072
-Const Bit18 As Long = &H40000         ' (2^18)            = 262144
-Const Bit19 As Long = &H80000         ' (2^19)            = 524288
+Const Bit16 As Long = 65536
+Const Bit17 As Long = 131072
+Const Bit18 As Long = 262144
+Const Bit19 As Long = 524288
 ' This also represents the maximum number of rows in an Excel worksheet.
-Const Bit20 As Long = &H100000        ' (2^20)            = 1048576
-Const Bit21 As Long = &H200000        ' (2^21)            = 2097152
-Const Bit22 As Long = &H400000        ' (2^22)            = 4194304
-Const Bit23 As Long = &H800000        ' (2^23)            = 8388608
-Const Bit24 As Long = &H1000000       ' (2^24)            = 16777216
-Const Bit25 As Long = &H2000000       ' (2^25)            = 33554432
-Const Bit26 As Long = &H4000000       ' (2^26)            = 67108864
-Const Bit27 As Long = &H8000000       ' (2^27)            = 134217728
-Const Bit28 As Long = &H10000000      ' (2^28)            = 268435456
-Const Bit29 As Long = &H20000000      ' (2^29)            = 536870912
-Const Bit30 As Long = &H40000000      ' (2^30)            = 1073741824
+Const Bit20 As Long = 1048576
+Const Bit21 As Long = 2097152
+Const Bit22 As Long = 4194304
+Const Bit23 As Long = 8388608
+Const Bit24 As Long = 16777216
+Const Bit25 As Long = 33554432
+Const Bit26 As Long = 67108864
+Const Bit27 As Long = 134217728
+Const Bit28 As Long = 268435456
+Const Bit29 As Long = 536870912
+Const Bit30 As Long = 1073741824
 ' "(2^31) = 2147483648" ~ This value is too large (by 1) for VBA's Long Data
 '  Type.  Converting (2^31) to a 32-bit Signed Integer yields -2147483648
 '  instead.  This is the smallest 2's Complement value that can be stored in a
@@ -105,7 +105,7 @@ Const Bit30 As Long = &H40000000      ' (2^30)            = 1073741824
 '  to "&H80000000" rather than "-2147483648#" is a way to circumvent this
 '  inconvenience and guarantee the assignment of the correct data type to the
 '  relevant constant.
-Const UPPER_MASK As Long = &H80000000 ' This is -2147483648, not 2147483648.
+Const UPPER_MASK As Long = 2147483648
 '******************************************************************************
 
 ' The "Dbl" appended to the following constants signify that they are declared
@@ -113,7 +113,7 @@ Const UPPER_MASK As Long = &H80000000 ' This is -2147483648, not 2147483648.
 ' This constant has the same value as "Bit26", except that it is declared as a
 '  Double Data Type in for use in the functions "genrand_res53()" and
 '  "genrand_res53XL()" (Note the "#" character appended after the number).
-Const Bit26Dbl As Double = 67108864#
+Const Bit26Dbl As Double = 67108864
 '******************************************************************************
 ' The following Constants are too large to be stored in a Long Data Type and
 '  must be stored in a Double Data Type even though they are Integer Valued.
@@ -121,20 +121,20 @@ Const Bit26Dbl As Double = 67108864#
 '  newly generated random numbers as a real number [0 To 1].
 ' This is the smallest positive "integer" that can fit inside a Double Data
 '  Type but not a Long Data Type.
-Const Bit31Dbl As Double = 2147483648#            ' (2^31)        = 2147483648
-Const Bit32Dbl As Double = 4294967296#            ' (2^32)        = 4294967296
+Const Bit31Dbl As Double = 2147483648
+Const Bit32Dbl As Double = 4294967296
 ' If VBA had a 4-byte Unsigned Long Integer Data Type, 4294967295 would have
 '  been the largest possible integer value that could be stored in it.
-Const Bit32DblLessOne As Double = Bit32Dbl# - 1#  ' (2^32) - 1    = 4294967295
+Const Bit32DblLessOne As Double = 4294967295
 '******************************************************************************
 ' This constant is for sake of accuracy because (in this situation at least)
 '  (x / 4294967295) is NOT equal to (x * (1 / 4294967295)).  The latter has
 '  been shown to produce results that are more accurate relative to the
 '  results produced from the original C code.
-Const Bit32DblLessOneInv As Double = 1# / Bit32DblLessOne#
+Const Bit32DblLessOneInv As Double = 1 / 4294967295
 '******************************************************************************
 ' This is the original constant: (2^53) = 9007199254740992
-Const Bit53Dbl As Double = 7199254740992# + 9E+15
+Const Bit53Dbl As Double = 7199254740992 + 9E+15
 ' Notice that:
 '    "Bit53Dbl#            - 9E+15" successfully yields "7199254740992", and
 '    "9.00719925474099E+15 - 9E+15" yields              "7199254740990".
@@ -152,7 +152,7 @@ Const Bit53Dbl As Double = 7199254740992# + 9E+15
 '  of zero is acceptable:
 '    http://www.math.sci.hiroshima-u.ac.jp/
 '    ~m-mat/MT/VERSIONS/C-LANG/ver991029.html
-Const defaultSeed As Long = 5489&
+Const defaultSeed As Long = 5489
 '******************************************************************************
 ' #include<stdio.h>
 
@@ -163,10 +163,10 @@ Const defaultSeed As Long = 5489&
 ' #define UPPER_MASK 0x80000000 /* most significant w-r bits */, defined above
 ' #define LOWER_MASK 0x7fffffff /* least significant r bits */, defined above
 '******************************************************************************
-Const constN As Long = 624&
-Const constM As Long = 397&
-Const constN_LessOne As Long = constN& - 1&
-Const MATRIX_A As Long = &H9908B0DF
+Const constN As Long = 624
+Const constM As Long = 397
+Const constN_LessOne As Long = 623
+Const MATRIX_A As Long = 2567483615
 
 '******************************************************************************
 '/* Tempering parameters */
@@ -178,8 +178,8 @@ Const MATRIX_A As Long = &H9908B0DF
 '#define TEMPERING_SHIFT_L(y)  (y >> 18)
 '******************************************************************************
 ' The TEMPERING_SHIFT macro functions are defined further into the module.
-Const TEMPERING_MASK_B As Long = &H9D2C5680
-Const TEMPERING_MASK_C As Long = &HEFC60000
+Const TEMPERING_MASK_B As Long = 2636928640
+Const TEMPERING_MASK_C As Long = 4022730752
 '******************************************************************************
 
 ' Global Variables (Not Quite "Static" in the traditional sense for VBA)
@@ -189,7 +189,7 @@ Const TEMPERING_MASK_C As Long = &HEFC60000
 '******************************************************************************
 ' Create a length 624 array to store the state of the generator and a
 '  corresponding indexing variable.
-Private MT(0& To constN_LessOne&) As Long
+Private MT(0 To constN_LessOne) As Long
 Private mti As Long
 ' The following variable replaces the static functionality of the variable
 '  "mti".  It is automatically initialized to "False" by default in VBA when
@@ -215,14 +215,14 @@ Sub MTrandom()
     Dim dimension As Long, j As Long
     '**************************************************************************
     ' Code to speed up the application.
-    Dim outputColumn As String: outputColumn$ = targetOutputColumn$
+    Dim outputColumn As String: outputColumn = targetOutputColumn
     With Application
         .DisplayAlerts = False
         .EnableEvents = False
         .ScreenUpdating = False
         .Calculation = xlCalculationManual
     End With
-    Range(outputColumn$ & ":" & outputColumn$).ClearContents
+    Range(outputColumn & ":" & outputColumn).ClearContents
     '**************************************************************************
     ' *** MT Initialization ***
     ' Seed should be an integer between -2147483648 and 2147483647 inclusive.
@@ -230,16 +230,16 @@ Sub MTrandom()
     '  be thrown by VBA (probably either Overflow (6) or Type Mismatch (13)).
     init_genrandXL
     ' "Bit20" is 1048576; also the max number of rows in an Excel worksheet.
-    dimension& = InputBox("How Many?: ", "How Many?", Bit20&)
+    dimension = InputBox("How Many?: ", "How Many?", Bit20)
     '**************************************************************************
     ' dimension cannot be less than 1 or greater than 1048576
-    If (dimension& < 1&) Or (dimension& > Bit20&) Then
-        dimension& = 1&
+    If (dimension < 1) Or (dimension > Bit20) Then
+        dimension = 1
     End If
     ' Resize the array.  The array is required to be two-dimensional because
     '  one-dimensional arrays in VBA are "horizontal", not "vertical", and
     '  arrays in Excel are always two-dimensional.
-    ReDim arr#(1& To dimension&, 1& To 1&)
+    ReDim arr(1 To dimension, 1 To 1)
     '**************************************************************************
     ' Get an array of ("dimension") Pseudo Random Numbers via MT and normalize
     '  them such that they fall between 0 and 1 inclusive.  All numerical
@@ -248,8 +248,8 @@ Sub MTrandom()
     '  https://msdn.microsoft.com/en-us/library/office/
     '  bb687869%28v=office.15%29.aspx), so at this point in the code
     '  there is no real purpose in forcing a data type to a Signed Long Value.
-    For j& = 1& To dimension&
-        arr#(j&, 1&) = genrand_real1#
+    For j = 1 To dimension
+        arr(j, 1) = genrand_real1
     Next
     '**************************************************************************
 Final_Housekeeping:
@@ -264,14 +264,14 @@ Final_Housekeeping:
     End With
     '**************************************************************************
     ' If an error was thrown and On Error is enabled, display a message box.
-    If Err.number <> 0& Then
+    If Err.number <> 0 Then
         MsgBox Err.number
     Else
         '**********************************************************************
         ' Otherwise, finally, output the Newly Generated Array of MT Pseudo
         '  Random Numbers in a single operation.
         Range( _
-            outputColumn$ & "1:" & outputColumn$ & CStr(dimension&)) = arr#
+            outputColumn & "1:" & outputColumn & CStr(dimension)) = arr
     End If
 End Sub     'MTrandom
 '******************************************************************************
@@ -290,11 +290,11 @@ Sub init_genrand(ByVal seed As Long)
     '**************************************************************************
     ' Unlike in the original C program, seed is an integer from -2147483648 to
     '  2147483647, instead of from 0 to 4294967295.
-    MT&(0&) = seed&
+    MT(0) = seed
     '**************************************************************************
     ' Initialize the State Array MT.
-    For mti& = 1& To constN_LessOne&
-        multiplicand& = MT&(mti& - 1&) Xor rShiftBy30&(MT&(mti& - 1&))
+    For mti = 1 To constN_LessOne
+        multiplicand = MT(mti - 1) Xor rShiftBy30(MT(mti - 1))
         '**********************************************************************
         ' The following lines all emulate Unsigned Multiplication of the
         '  value "multiplicand" by the number 1812433253 = 0x6C078965 =
@@ -303,19 +303,19 @@ Sub init_genrand(ByVal seed As Long)
         '**********************************************************************
         ' The first line emulates: "Multiplicand Left Shifted by Zero Bits
         '  plus Multiplicand Left Shifted by Two Bits".
-        addend& = adder&(multiplicand&, lShiftBy2&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy5&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy6&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy8&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy11&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy15&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy16&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy17&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy18&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy26&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy27&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy29&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy30&(multiplicand&))
+        addend = adder(multiplicand, lShiftBy2(multiplicand))
+        addend = adder(addend, lShiftBy5(multiplicand))
+        addend = adder(addend, lShiftBy6(multiplicand))
+        addend = adder(addend, lShiftBy8(multiplicand))
+        addend = adder(addend, lShiftBy11(multiplicand))
+        addend = adder(addend, lShiftBy15(multiplicand))
+        addend = adder(addend, lShiftBy16(multiplicand))
+        addend = adder(addend, lShiftBy17(multiplicand))
+        addend = adder(addend, lShiftBy18(multiplicand))
+        addend = adder(addend, lShiftBy26(multiplicand))
+        addend = adder(addend, lShiftBy27(multiplicand))
+        addend = adder(addend, lShiftBy29(multiplicand))
+        addend = adder(addend, lShiftBy30(multiplicand))
         ' The following are equivalent:
         ' x * 1812433253
         ' = x * (1 + 4 + 32 + 64 + 256 + 2048 + 32768 + 65536 + 131072 +
@@ -324,7 +324,7 @@ Sub init_genrand(ByVal seed As Long)
         '    (2^16) + (2^17) + (2^18) + (2^26) + (2^27) + (2^29) + (2^30))
         '**********************************************************************
         'Add "mti" to the result.  "mti" should be left at 624 at looping end.
-        MT&(mti&) = adder&(addend&, mti&)
+        MT(mti) = adder(addend, mti)
     Next
     '**************************************************************************
     ' The following line replaces the functionality of this line of code that
@@ -363,80 +363,80 @@ Sub init_by_array(ByRef init_key() As Long)
     Dim i As Long, j As Long, k As Long, multiplicand As Long, _
         addend As Long, initKeyLowerBound As Long, key_length As Long
     ' Code to ensure the first element of "init_key()" is the zeroth element.
-    initKeyLowerBound& = LBound(init_key&)
+    initKeyLowerBound = LBound(init_key)
     ' Passing "key_length" as in the original C code is unnecessary since the
     '  VBA functions "UBound()" and "LBound()" are built-in.
-    key_length& = UBound(init_key&) - initKeyLowerBound& + 1&
+    key_length = UBound(init_key) - initKeyLowerBound + 1
     init_genrand 19650218
-    i& = 1&
-    j& = 0&
-    If constN& > key_length& Then
-        k& = constN&
+    i = 1
+    j = 0
+    If constN > key_length Then
+        k = constN
     Else
-        k& = key_length&
+        k = key_length
     End If
     '**************************************************************************
-    For k& = k& To 1& Step -1&
-        multiplicand& = MT&(i& - 1&) Xor rShiftBy30&(MT&(i& - 1&))
+    For k = k To 1 Step -1
+        multiplicand = MT(i - 1) Xor rShiftBy30(MT(i - 1))
         '**********************************************************************
         ' The following lines emulate multiplying the multiplicand by 1664525
         '  with built-in 32-bit overflow protection:
-        addend& = adder&(multiplicand&, lShiftBy2&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy3&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy9&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy10&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy13&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy14&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy16&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy19&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy20&(multiplicand&))
+        addend = adder(multiplicand, lShiftBy2(multiplicand))
+        addend = adder(addend, lShiftBy3(multiplicand))
+        addend = adder(addend, lShiftBy9(multiplicand))
+        addend = adder(addend, lShiftBy10(multiplicand))
+        addend = adder(addend, lShiftBy13(multiplicand))
+        addend = adder(addend, lShiftBy14(multiplicand))
+        addend = adder(addend, lShiftBy16(multiplicand))
+        addend = adder(addend, lShiftBy19(multiplicand))
+        addend = adder(addend, lShiftBy20(multiplicand))
         '**********************************************************************
         ' Add both init_key(j) and j to the final result:
-        MT&(i&) = adder&(adder&(MT&(i&) Xor addend&, _
-            init_key&(j& + initKeyLowerBound&)), j&)
-        i& = i& + 1&
-        j& = j& + 1&
-        If i& >= constN& Then
-            MT&(0&) = MT&(constN_LessOne&)
-            i& = 1&
+        MT(i) = adder(adder(MT(i) Xor addend, _
+            init_key(j + initKeyLowerBound)), j)
+        i = i + 1
+        j = j + 1
+        If i >= constN Then
+            MT(0) = MT(constN_LessOne)
+            i = 1
         End If
-        If j& >= key_length& Then
-            j& = 0&
+        If j >= key_length Then
+            j = 0
         End If
     Next
     '**************************************************************************
-    For k& = constN_LessOne& To 1& Step -1&
-        multiplicand& = MT&(i& - 1&) Xor rShiftBy30&(MT&(i& - 1&))
+    For k = constN_LessOne To 1 Step -1
+        multiplicand = MT(i - 1) Xor rShiftBy30(MT(i - 1))
         '**********************************************************************
         ' The following lines emulate multiplying the multiplicand by
         '  1566083941 with built-in 32-bit overflow protection:
-        addend& = adder&(multiplicand&, lShiftBy2&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy5&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy6&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy8&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy9&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy11&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy15&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy19&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy20&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy22&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy24&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy26&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy27&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy28&(multiplicand&))
-        addend& = adder&(addend&, lShiftBy30&(multiplicand&))
+        addend = adder(multiplicand, lShiftBy2(multiplicand))
+        addend = adder(addend, lShiftBy5(multiplicand))
+        addend = adder(addend, lShiftBy6(multiplicand))
+        addend = adder(addend, lShiftBy8(multiplicand))
+        addend = adder(addend, lShiftBy9(multiplicand))
+        addend = adder(addend, lShiftBy11(multiplicand))
+        addend = adder(addend, lShiftBy15(multiplicand))
+        addend = adder(addend, lShiftBy19(multiplicand))
+        addend = adder(addend, lShiftBy20(multiplicand))
+        addend = adder(addend, lShiftBy22(multiplicand))
+        addend = adder(addend, lShiftBy24(multiplicand))
+        addend = adder(addend, lShiftBy26(multiplicand))
+        addend = adder(addend, lShiftBy27(multiplicand))
+        addend = adder(addend, lShiftBy28(multiplicand))
+        addend = adder(addend, lShiftBy30(multiplicand))
         '**********************************************************************
         ' Subtract "i" from the final result:
-        MT&(i&) = adder&(MT&(i&) Xor addend&, (-1&) * i&)
-        i& = i& + 1&
-        If i& >= constN& Then
-            MT&(0&) = MT&(constN_LessOne&)
-            i& = 1&
+        MT(i) = adder(MT(i) Xor addend, (-1) * i)
+        i = i + 1
+        If i >= constN Then
+            MT(0) = MT(constN_LessOne)
+            i = 1
         End If
     Next
     '**************************************************************************
     ' A non-zero array is assured.
-    MT&(0&) = UPPER_MASK&
+    MT(0) = UPPER_MASK
 End Sub     'init_by_array
 '******************************************************************************
 
@@ -465,14 +465,14 @@ Function genrand_signedInt32() As Long
     '  check for the initialization of the MT array, since VBA does not have
     '  an equivalent "static" keyword to C:
     If Not mtInitialized Then
-        init_genrand defaultSeed&
+        init_genrand defaultSeed
     End If
     '**************************************************************************
     '{ /* generate N words at one time */
     ' This is executed every "N" numbers.  Since "mti" is no longer
     '  initialized to "N+1", it is not necessary to check if "mti" is greater
     '  than "constN".
-    If mti& = constN& Then
+    If mti = constN Then
         '**********************************************************************
         ' The following lines were replaced earlier by a different approach
         '  that occurs outside of the current If Statement since VBA does not
@@ -497,43 +497,43 @@ Function genrand_signedInt32() As Long
         '     }
         ' }
         '**********************************************************************
-        For mti& = 0& To constN_LessOne&
-            genrand_signedInt32& = (MT&(mti&) And UPPER_MASK&) Or _
-                (MT&((mti& + 1&) Mod constN&) And LOWER_MASK&)
+        For mti = 0 To constN_LessOne
+            genrand_signedInt32 = (MT(mti) And UPPER_MASK) Or _
+                (MT((mti + 1) Mod constN) And LOWER_MASK)
             '******************************************************************
-            MT&(mti&) = MT&((mti& + constM&) Mod constN&) Xor _
-                rShiftBy1&(genrand_signedInt32&)
+            MT(mti) = MT((mti + constM) Mod constN) Xor _
+                rShiftBy1(genrand_signedInt32)
             '******************************************************************
             ' If y is Odd; emulates "mag01[y & 0x1]" in the original C code.
-            If CBool(genrand_signedInt32& And Bit0&) Then
+            If CBool(genrand_signedInt32 And Bit0) Then
                 ' MATRIX_A is originally from the static unsigned long array
                 '  mag01[2] = {0x0, MATRIX_A} in the original C code.
-                MT&(mti&) = MT&(mti&) Xor MATRIX_A&
+                MT(mti) = MT(mti) Xor MATRIX_A
             End If
             '******************************************************************
         Next
         ' Emulates "mti = 0;"
-        mti& = 0&
+        mti = 0
         '**********************************************************************
     End If
     
     '**************************************************************************
     ' Extract a Tempered Pseudorandom Number based on the index-th value.
     ' "genrand_signedInt32" is used in place of the variable "y" here.
-    genrand_signedInt32& = MT&(mti&)
+    genrand_signedInt32 = MT(mti)
     ' Emulates 'mti++', since it cannot be combined with the previous line on
     '  a single line of code (C/C++ style) in VB/VBA.
-    mti& = mti& + 1&
+    mti = mti + 1
     '**************************************************************************
     ' Carry out Tempering Shifts and Tempering Masks:
-    genrand_signedInt32& = genrand_signedInt32& Xor _
-        rShiftBy11&(genrand_signedInt32&)
-    genrand_signedInt32& = genrand_signedInt32& Xor _
-        (lShiftBy7&(genrand_signedInt32&) And TEMPERING_MASK_B&)
-    genrand_signedInt32& = genrand_signedInt32& Xor _
-        (lShiftBy15&(genrand_signedInt32&) And TEMPERING_MASK_C&)
-    genrand_signedInt32& = genrand_signedInt32& Xor _
-        rShiftBy18&(genrand_signedInt32&)
+    genrand_signedInt32 = genrand_signedInt32 Xor _
+        rShiftBy11(genrand_signedInt32)
+    genrand_signedInt32 = genrand_signedInt32 Xor _
+        (lShiftBy7(genrand_signedInt32) And TEMPERING_MASK_B)
+    genrand_signedInt32 = genrand_signedInt32 Xor _
+        (lShiftBy15(genrand_signedInt32) And TEMPERING_MASK_C)
+    genrand_signedInt32 = genrand_signedInt32 Xor _
+        rShiftBy18(genrand_signedInt32)
     '**************************************************************************
     
     ' A Return statement "return y;" is not needed because the last value of
@@ -558,9 +558,9 @@ Function genrand_int32() As Double
 ' /* generates a random number on [0,0xffffffff]-interval */
 ' unsigned long genrand_int32(void)
 '******************************************************************************
-    genrand_int32# = CDbl(genrand_signedInt32&)
-    If genrand_int32# < 0# Then
-        genrand_int32# = genrand_int32# + Bit32Dbl#
+    genrand_int32 = CDbl(genrand_signedInt32)
+    If genrand_int32 < 0 Then
+        genrand_int32 = genrand_int32 + Bit32Dbl
     End If
 End Function    'genrand_int32
 '******************************************************************************
@@ -582,7 +582,7 @@ Function genrand_int31() As Long
     '  sign bit to zero; thus, there are no problems using the function
     '  "genrand_signedInt32()" in place of "genrand_Int32()" in order to
     '  maximize the performance of the function.
-    genrand_int31& = rShiftBy1&(genrand_signedInt32&)
+    genrand_int31 = rShiftBy1(genrand_signedInt32)
 End Function    'genrand_int31
 '******************************************************************************
 
@@ -608,14 +608,14 @@ Function genrand_real1() As Double
 '     /* divided by 2^32-1 */
 ' }
 '******************************************************************************
-    genrand_real1# = CDbl(genrand_signedInt32&)
+    genrand_real1 = CDbl(genrand_signedInt32)
     ' Multiplication by "Bit32DblLessOneInv" is shown to be more accurate
     '  relative to the outputs from the original C code instead of Division
     '  by "Bit32DblLessOne".
-    If genrand_real1# < 0# Then
-        genrand_real1# = (genrand_real1# + Bit32Dbl#) * Bit32DblLessOneInv#
+    If genrand_real1 < 0 Then
+        genrand_real1 = (genrand_real1 + Bit32Dbl) * Bit32DblLessOneInv
     Else
-        genrand_real1# = genrand_real1# * Bit32DblLessOneInv#
+        genrand_real1 = genrand_real1 * Bit32DblLessOneInv
     End If
 End Function    'genrand_real1
 '******************************************************************************
@@ -635,11 +635,11 @@ Function genrand_real2() As Double
 '     /* divided by 2^32 */
 ' }
 '******************************************************************************
-    genrand_real2# = CDbl(genrand_signedInt32&)
-    If genrand_real2# < 0# Then
-        genrand_real2# = (genrand_real2# + Bit32Dbl#) / Bit32Dbl#
+    genrand_real2 = CDbl(genrand_signedInt32)
+    If genrand_real2 < 0 Then
+        genrand_real2 = (genrand_real2 + Bit32Dbl) / Bit32Dbl
     Else
-        genrand_real2# = genrand_real2# / Bit32Dbl#
+        genrand_real2 = genrand_real2 / Bit32Dbl
     End If
 End Function    'genrand_real2
 '******************************************************************************
@@ -660,11 +660,11 @@ Function genrand_real3() As Double
 '     /* divided by 2^32 */
 ' }
 '******************************************************************************
-    genrand_real3# = CDbl(genrand_signedInt32&)
-    If genrand_real3# < 0# Then
-        genrand_real3# = ((genrand_real3# + Bit32Dbl#) + 0.5) / Bit32Dbl#
+    genrand_real3 = CDbl(genrand_signedInt32)
+    If genrand_real3 < 0 Then
+        genrand_real3 = ((genrand_real3 + Bit32Dbl) + 0.5) / Bit32Dbl
     Else
-        genrand_real3# = (genrand_real3# + 0.5) / Bit32Dbl#
+        genrand_real3 = (genrand_real3 + 0.5) / Bit32Dbl
     End If
 End Function    'genrand_real3
 '******************************************************************************
@@ -695,9 +695,9 @@ Function genrand_res53() As Double
     '  following lines of code will return identical results regardless of
     '  whether "genrand_signedInt32()" or "genrand_int32()" is used.  There
     '  should be no issues using the former for speed purposes here.
-    genrand_res53# = CDbl(rShiftBy5&(genrand_signedInt32&)) * Bit26Dbl#
-    genrand_res53# = (CDbl(rShiftBy6&(genrand_signedInt32&)) + _
-        genrand_res53#) / Bit53Dbl#
+    genrand_res53 = CDbl(rShiftBy5(genrand_signedInt32)) * Bit26Dbl
+    genrand_res53 = (CDbl(rShiftBy6(genrand_signedInt32)) + _
+        genrand_res53) / Bit53Dbl
     ' (32 - 5 + 26) = 53; the second call of "genrand_signedInt32()" resolves
     '  the zeroes left shifted in by the first call of "genrand_signedInt32()"
     '  and the subsequent bit shift operations.
@@ -759,43 +759,43 @@ Sub main()
     ' VBA does not have the capability to initialize an array of any data type
     '  other than Variant on a single line.  Feel free to modify at one's
     '  discretion to enable this functionality if one prefers this route.
-    Dim init_arr(1& To 4&) As Long
-    init_arr&(1&) = &H123&
-    init_arr&(2&) = &H234&
-    init_arr&(3&) = &H345&
-    init_arr&(4&) = &H456&
+    Dim init_arr(1 To 4) As Long
+    init_arr(1) = 291
+    init_arr(2) = 564
+    init_arr(3) = 837
+    init_arr(4) = 1110
     ' "key_length" does not need to be passed as a parameter to
     '  "init_by_array()" as in the original code since VBA has built-in
     '  functions to retrieve the dimensions of an array.
-    Call init_by_array(init_arr&)
+    Call init_by_array(init_arr)
     '**************************************************************************
     ' Generate Numbers
     ' The results of "genrand_int32()" and "genrand_real2()" needs to be
     '  stored to a local variable before applying formatting in order to
     '  display more than seven digits of significance.
-    Print #1, CStr(NumOutputs&) & " outputs of genrand_int32()"
-    For i& = 0& To (NumOutputs& - 1&)
+    Print #1, CStr(NumOutputs) & " outputs of genrand_int32()"
+    For i = 0 To (NumOutputs - 1)
         ' The output values are Unsigned 32-bit Pseudorandom "Integers".
-        x# = genrand_int32#
-        Print #1, Format$(x#, "##########");
+        x = genrand_int32
+        Print #1, Format(x, "##########");
         ' Align the output values
-        If Len(CStr(x#)) < 10& Then
-            Print #1, Space$(10& - Len(CStr(x#)));
+        If Len(CStr(x)) < 10 Then
+            Print #1, Space(10 - Len(CStr(x)));
         End If
-        If (i& Mod 5&) = 4& Then
+        If (i Mod 5) = 4 Then
             Print #1, " "
         Else
             ' The semi-colon tells "Print" not to append a newline character.
             Print #1, " ";
         End If
     Next
-    Print #1, vbNewLine & CStr(NumOutputs&) & " outputs of genrand_real2()"
+    Print #1, vbNewLine & CStr(NumOutputs) & " outputs of genrand_real2()"
     ' The numbers in the original C output text file were rounded to 8 digits.
-    For i& = 0& To (NumOutputs& - 1&)
+    For i = 0 To (NumOutputs - 1)
         ' The output values are random numbers on the [0, 1) interval.
-        x# = genrand_real2#
-        Print #1, Format$(x#, "0.00000000");
-        If (i& Mod 5&) = 4& Then
+        x = genrand_real2
+        Print #1, Format(x, "0.00000000");
+        If (i Mod 5) = 4 Then
             Print #1, " "
         Else
             ' The semi-colon tells "Print" not to append a newline character.
@@ -815,7 +815,7 @@ Final_Housekeeping:
     End With
     '**************************************************************************
     ' If an error was thrown and On Error is enabled, display a message box.
-    If Err.number <> 0& Then
+    If Err.number <> 0 Then
         MsgBox Err.number
     End If
 End Sub     'Main
@@ -838,7 +838,7 @@ Sub init_genrandXL()
 '******************************************************************************
     init_genrand CLng(InputBox("Input Seed: ", "Input Seed", _
         CLng(Round((Application.Evaluate("=RAND()") * _
-        Bit32DblLessOne#) - Bit31Dbl#, 0&))))
+        Bit32DblLessOne) - Bit31Dbl, 0))))
 End Sub     'init_genrandXL
 '******************************************************************************
 
@@ -864,7 +864,7 @@ Function genrand_signedInt32XL() As Double
 '  Data Types, even if they are Integers.
 '******************************************************************************
     Application.Volatile (True)
-    genrand_signedInt32XL# = CDbl(genrand_signedInt32&)
+    genrand_signedInt32XL = CDbl(genrand_signedInt32)
 End Function    'genrand_signedInt32XL
 '******************************************************************************
 
@@ -874,9 +874,9 @@ Function genrand_int32XL() As Double
 '  "Application.Volatile (True)" Flag.
 '******************************************************************************
     Application.Volatile (True)
-    genrand_int32XL# = CDbl(genrand_signedInt32&)
-    If genrand_int32XL# < 0# Then
-        genrand_int32XL# = genrand_int32XL# + Bit32Dbl#
+    genrand_int32XL = CDbl(genrand_signedInt32)
+    If genrand_int32XL < 0 Then
+        genrand_int32XL = genrand_int32XL + Bit32Dbl
     End If
 End Function    'genrand_int32XL
 '******************************************************************************
@@ -892,7 +892,7 @@ Function genrand_int31XL() As Double
 '  built-in function "CDbl()" applies here.
 '******************************************************************************
     Application.Volatile (True)
-    genrand_int31XL# = CDbl(rShiftBy1&(genrand_signedInt32&))
+    genrand_int31XL = CDbl(rShiftBy1(genrand_signedInt32))
 End Function
 '******************************************************************************
 
@@ -902,12 +902,12 @@ Function genrand_real1XL() As Double
 '  "Application.Volatile (True)" Flag.
 '******************************************************************************
     Application.Volatile (True)
-    genrand_real1XL# = CDbl(genrand_signedInt32&)
-    If genrand_real1XL# < 0# Then
-        genrand_real1XL# = _
-            (genrand_real1XL# + Bit32Dbl#) * Bit32DblLessOneInv#
+    genrand_real1XL = CDbl(genrand_signedInt32)
+    If genrand_real1XL < 0 Then
+        genrand_real1XL = _
+            (genrand_real1XL + Bit32Dbl) * Bit32DblLessOneInv
     Else
-        genrand_real1XL# = genrand_real1XL# * Bit32DblLessOneInv#
+        genrand_real1XL = genrand_real1XL * Bit32DblLessOneInv
     End If
 End Function    'genrand_real1XL
 '******************************************************************************
@@ -918,11 +918,11 @@ Function genrand_real2XL() As Double
 '  "Application.Volatile (True)" Flag.
 '******************************************************************************
     Application.Volatile (True)
-    genrand_real2XL# = CDbl(genrand_signedInt32&)
-    If genrand_real2XL# < 0# Then
-        genrand_real2XL# = (genrand_real2XL# + Bit32Dbl#) / Bit32Dbl#
+    genrand_real2XL = CDbl(genrand_signedInt32)
+    If genrand_real2XL < 0 Then
+        genrand_real2XL = (genrand_real2XL + Bit32Dbl) / Bit32Dbl
     Else
-        genrand_real2XL# = genrand_real2XL# / Bit32Dbl#
+        genrand_real2XL = genrand_real2XL / Bit32Dbl
     End If
 End Function    'genrand_real2XL
 '******************************************************************************
@@ -933,11 +933,11 @@ Function genrand_real3XL() As Double
 '  "Application.Volatile (True)" Flag.
 '******************************************************************************
     Application.Volatile (True)
-    genrand_real3XL# = CDbl(genrand_signedInt32&)
-    If genrand_real3XL# < 0# Then
-        genrand_real3XL# = ((genrand_real3XL# + Bit32Dbl#) + 0.5) / Bit32Dbl#
+    genrand_real3XL = CDbl(genrand_signedInt32)
+    If genrand_real3XL < 0 Then
+        genrand_real3XL = ((genrand_real3XL + Bit32Dbl) + 0.5) / Bit32Dbl
     Else
-        genrand_real3XL# = (genrand_real3XL# + 0.5) / Bit32Dbl#
+        genrand_real3XL = (genrand_real3XL + 0.5) / Bit32Dbl
     End If
 End Function    'genrand_real3XL
 '******************************************************************************
@@ -948,9 +948,9 @@ Function genrand_res53XL() As Double
 '  "Application.Volatile (True)" Flag.
 '******************************************************************************
     Application.Volatile (True)
-    genrand_res53XL# = CDbl(rShiftBy5&(genrand_signedInt32&)) * Bit26Dbl#
-    genrand_res53XL# = (CDbl(rShiftBy6&(genrand_signedInt32&)) + _
-        genrand_res53XL#) / Bit53Dbl#
+    genrand_res53XL = CDbl(rShiftBy5(genrand_signedInt32)) * Bit26Dbl
+    genrand_res53XL = (CDbl(rShiftBy6(genrand_signedInt32)) + _
+        genrand_res53XL) / Bit53Dbl
 End Function    'genrand_res53XL
 '******************************************************************************
 
@@ -962,8 +962,8 @@ Sub mainXL()
 ' Initial Housekeeping
     On Error GoTo Final_Housekeeping
     '**************************************************************************
-    Dim arr1(1& To rdimension&, 1& To cdimension&) As Double
-    Dim arr2(1& To rdimension&, 1& To cdimension&) As Double
+    Dim arr1(1 To rdimension, 1 To cdimension) As Double
+    Dim arr2(1 To rdimension, 1 To cdimension) As Double
     Dim i As Long, j As Long
     '**************************************************************************
     ' Code to speed up the application.
@@ -979,27 +979,27 @@ Sub mainXL()
     ' VBA does not have the capability to initialize an array of any data type
     '  other than Variant on a single line.  Feel free to modify at one's
     '  discretion to enable this functionality if one prefers this route.
-    Dim init_arr(3&) As Long
-    init_arr&(0&) = &H123&
-    init_arr&(1&) = &H234&
-    init_arr&(2&) = &H345&
-    init_arr&(3&) = &H456&
-    Call init_by_array(init_arr&)
+    Dim init_arr(3) As Long
+    init_arr(0) = 291
+    init_arr(1) = 564
+    init_arr(2) = 837
+    init_arr(3) = 1110
+    Call init_by_array(init_arr)
     '**************************************************************************
     ' Generate Numbers
     ' The numbers in the original C output text file were rounded to 8 digits.
     ' Everything is explicitly outputted to double data types since the output
     '  medium is an Excel spreadsheet itself.
-    For i& = 1& To rdimension&
-        For j& = 1& To cdimension&
+    For i = 1 To rdimension
+        For j = 1 To cdimension
             ' The output values are Unsigned 32-bit Pseudorandom "Integers".
-            arr1#(i&, j&) = genrand_int32#
+            arr1(i, j) = genrand_int32
         Next
     Next
-    For i& = 1& To rdimension&
-        For j& = 1& To cdimension&
+    For i = 1 To rdimension
+        For j = 1 To cdimension
             ' The output values are random numbers on the [0, 1) interval.
-            arr2#(i&, j&) = Round(genrand_real2#, 8&)
+            arr2(i, j) = Round(genrand_real2, 8)
         Next
     Next
 Final_Housekeeping:
@@ -1014,18 +1014,18 @@ Final_Housekeeping:
     End With
     '**************************************************************************
     ' If an error was thrown and On Error is enabled, display a message box.
-    If Err.number <> 0& Then
+    If Err.number <> 0 Then
         MsgBox Err.number
     Else
         '**********************************************************************
         ' Otherwise, finally, output the Newly Generated Arrays of MT Pseudo
         '  Random Numbers.
         Range("$A$1") = "1000 outputs of genrand_int32()"
-        Range("$A$2:$E$" & CStr(rdimension& + 1&)) = arr1#
-        Range("$A$" & CStr(rdimension& + 3&)) = _
+        Range("$A$2:$E$" & CStr(rdimension + 1)) = arr1
+        Range("$A$" & CStr(rdimension + 3)) = _
             "1000 outputs of genrand_real2()"
-        Range("$A$" & CStr(rdimension& + 4&) & ":$E$" & _
-            CStr((2& * (rdimension& + 1&)) + 1&)) = arr2#
+        Range("$A$" & CStr(rdimension + 4) & ":$E$" & _
+            CStr((2 * (rdimension + 1)) + 1)) = arr2
     End If
 End Sub     'MainXL
 '******************************************************************************
@@ -1036,7 +1036,7 @@ Function getCoinFlip() As Boolean
 '  [-2147483648, -1] and "True" if it returns [0, 2147483647] (both outcomes
 '  have 2147483648 possible intermediate values).
 '******************************************************************************
-    If genrand_signedInt32& < 0& Then
+    If genrand_signedInt32 < 0 Then
         getCoinFlip = False
     Else
         getCoinFlip = True
@@ -1050,7 +1050,7 @@ Function getCoinFlipXL() As Boolean
 '  "Application.Volatile (True)" Flag.
 '******************************************************************************
     Application.Volatile (True)
-    If genrand_signedInt32& < 0& Then
+    If genrand_signedInt32 < 0 Then
         getCoinFlipXL = False
     Else
         getCoinFlipXL = True
@@ -1080,13 +1080,13 @@ Function getRndNormalStandard() As Double
 '  output values that are greater than 0.0, and exactly 2147483648 possible
 '  distinct output values that are less than 0.0.
 '******************************************************************************
-    getRndNormalStandard# = CDbl(genrand_signedInt32&)
-    If getRndNormalStandard# < 0# Then
-        getRndNormalStandard# = WorksheetFunction.Norm_Inv#( _
-            (getRndNormalStandard# + Bit32Dbl#) * Bit32DblLessOneInv#, 0#, 1#)
+    getRndNormalStandard = CDbl(genrand_signedInt32)
+    If getRndNormalStandard < 0 Then
+        getRndNormalStandard = WorksheetFunction.Norm_Inv( _
+            (getRndNormalStandard + Bit32Dbl) * Bit32DblLessOneInv, 0, 1)
     Else
-        getRndNormalStandard# = WorksheetFunction.Norm_Inv#( _
-            getRndNormalStandard# * Bit32DblLessOneInv#, 0#, 1#)
+        getRndNormalStandard = WorksheetFunction.Norm_Inv( _
+            getRndNormalStandard * Bit32DblLessOneInv, 0, 1)
     End If
 End Function    'getRndNormalStandard
 '******************************************************************************
@@ -1097,20 +1097,20 @@ Function getRndNormalStandardXL() As Double
 '  the "Application.Volatile (True)" Flag.
 '******************************************************************************
     Application.Volatile (True)
-    getRndNormalStandardXL# = CDbl(genrand_signedInt32&)
-    If getRndNormalStandardXL# < 0# Then
-        getRndNormalStandardXL# = WorksheetFunction.Norm_Inv#( _
-            (getRndNormalStandardXL# + Bit32Dbl#) * _
-            Bit32DblLessOneInv#, 0#, 1#)
+    getRndNormalStandardXL = CDbl(genrand_signedInt32)
+    If getRndNormalStandardXL < 0 Then
+        getRndNormalStandardXL = WorksheetFunction.Norm_Inv( _
+            (getRndNormalStandardXL + Bit32Dbl) * _
+            Bit32DblLessOneInv, 0, 1)
     Else
-        getRndNormalStandardXL# = WorksheetFunction.Norm_Inv#( _
-            getRndNormalStandardXL# * Bit32DblLessOneInv#, 0#, 1#)
+        getRndNormalStandardXL = WorksheetFunction.Norm_Inv( _
+            getRndNormalStandardXL * Bit32DblLessOneInv, 0, 1)
     End If
 End Function    'getRndNormalStandardXL
 '******************************************************************************
 
-Function getRndNormalDist(Optional ByVal mean As Double = 0#, _
-    Optional ByVal std As Double = 1#) As Double
+Function getRndNormalDist(Optional ByVal mean As Double = 0, _
+    Optional ByVal std As Double = 1) As Double
 '******************************************************************************
 ' This function uses the result of "genrand_signedInt32()" normalized to
 '  [0, 1] in conjunction with Excel's Inverse Normal Distribution function to
@@ -1124,32 +1124,32 @@ Function getRndNormalDist(Optional ByVal mean As Double = 0#, _
 '  output values that are greater than "mean", and exactly 2147483648 possible
 '  distinct output values that are less than "mean".
 '******************************************************************************
-    getRndNormalDist# = CDbl(genrand_signedInt32&)
-    If getRndNormalDist# < 0# Then
-        getRndNormalDist# = WorksheetFunction.Norm_Inv#((getRndNormalDist# _
-            + Bit32Dbl#) * Bit32DblLessOneInv#, mean#, Abs(std#))
+    getRndNormalDist = CDbl(genrand_signedInt32)
+    If getRndNormalDist < 0 Then
+        getRndNormalDist = WorksheetFunction.Norm_Inv((getRndNormalDist _
+            + Bit32Dbl) * Bit32DblLessOneInv, mean, Abs(std))
     Else
-        getRndNormalDist# = WorksheetFunction.Norm_Inv#( _
-            getRndNormalDist# * Bit32DblLessOneInv#, mean#, Abs(std#))
+        getRndNormalDist = WorksheetFunction.Norm_Inv( _
+            getRndNormalDist * Bit32DblLessOneInv, mean, Abs(std))
     End If
 End Function    'getRndNormalDist
 '******************************************************************************
 
-Function getRndNormalDistXL(Optional ByVal mean As Double = 0#, _
-    Optional ByVal std As Double = 1#) As Double
+Function getRndNormalDistXL(Optional ByVal mean As Double = 0, _
+    Optional ByVal std As Double = 1) As Double
 '******************************************************************************
 ' This function is the same as "getRndNormalDist()" with the addition of the
 '  "Application.Volatile (True)" Flag.
 '******************************************************************************
     Application.Volatile (True)
-    getRndNormalDistXL# = CDbl(genrand_signedInt32&)
-    If getRndNormalDistXL# < 0# Then
-        getRndNormalDistXL# = WorksheetFunction.Norm_Inv#( _
-            (getRndNormalDistXL# + Bit32Dbl#) * Bit32DblLessOneInv#, _
-            mean#, Abs(std#))
+    getRndNormalDistXL = CDbl(genrand_signedInt32)
+    If getRndNormalDistXL < 0 Then
+        getRndNormalDistXL = WorksheetFunction.Norm_Inv( _
+            (getRndNormalDistXL + Bit32Dbl) * Bit32DblLessOneInv, _
+            mean, Abs(std))
     Else
-        getRndNormalDistXL# = WorksheetFunction.Norm_Inv#( _
-            getRndNormalDistXL# * Bit32DblLessOneInv#, mean#, Abs(std#))
+        getRndNormalDistXL = WorksheetFunction.Norm_Inv( _
+            getRndNormalDistXL * Bit32DblLessOneInv, mean, Abs(std))
     End If
 End Function    'getRndNormalDistXL
 '******************************************************************************
@@ -1165,11 +1165,11 @@ Private Function rShiftBy11(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for the sign bit, then
     '  divide the result by (2^11).
-    rShiftBy11& = (value& And Bits11To30&) / Bit11&
+    rShiftBy11 = (value And Bits11To30) / Bit11
     '**************************************************************************
     ' "Save the sign bit" and move it to the 20th bit position.
-    If value& < 0& Then
-        rShiftBy11& = rShiftBy11& Or Bit20&
+    If value < 0 Then
+        rShiftBy11 = rShiftBy11 Or Bit20
     End If
 End Function    'rShiftBy11
 '******************************************************************************
@@ -1183,11 +1183,11 @@ Private Function lShiftBy7(ByVal value As Long) As Long
     '  left shifting by 7 bits (Bit 24 is not masked because it will be
     '  shifted to the 31st bit of the Result, which is its Sign bit).  Then,
     '  multiply the result by (2^7).
-    lShiftBy7& = (value& And Bits0To23&) * Bit7&
+    lShiftBy7 = (value And Bits0To23) * Bit7
     '**************************************************************************
     ' Restore what was the 24th bit in Value to the 31st bit of the result.
-    If (value& And Bit24&) <> 0& Then
-        lShiftBy7& = lShiftBy7& Or UPPER_MASK&
+    If (value And Bit24) <> 0 Then
+        lShiftBy7 = lShiftBy7 Or UPPER_MASK
     End If
 End Function    'lShiftBy7
 '******************************************************************************
@@ -1201,11 +1201,11 @@ Private Function lShiftBy15(ByVal value As Long) As Long
     '  left shifting by 15 bits (Bit 16 is not masked because it will be
     '  shifted to the 31st bit of the Result, which is its Sign bit).  Then,
     '  multiply the result by (2^15).
-    lShiftBy15& = (value& And Bits0To15&) * Bit15&
+    lShiftBy15 = (value And Bits0To15) * Bit15
     '**************************************************************************
     ' Restore what was the 16th bit in Value to the 31st bit of the result.
-    If (value& And Bit16&) <> 0& Then
-        lShiftBy15& = lShiftBy15& Or UPPER_MASK&
+    If (value And Bit16) <> 0 Then
+        lShiftBy15 = lShiftBy15 Or UPPER_MASK
     End If
 End Function    'lShiftBy15
 '******************************************************************************
@@ -1217,11 +1217,11 @@ Private Function rShiftBy18(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for the sign bit, then
     '  divide the result by (2^18).
-    rShiftBy18& = (value& And Bits18To30&) / Bit18&
+    rShiftBy18 = (value And Bits18To30) / Bit18
     '**************************************************************************
     ' "Save the sign bit" and move it to the 13th bit position.
-    If value& < 0& Then
-        rShiftBy18& = rShiftBy18& Or Bit13&
+    If value < 0 Then
+        rShiftBy18 = rShiftBy18 Or Bit13
     End If
 End Function    'rShiftBy18
 '******************************************************************************
@@ -1248,11 +1248,11 @@ Private Function lShiftBy1(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 30 (this is the
     '  sign bit of the result), then multiply by (2^1).
-    lShiftBy1& = (value& And Bits0To29&) * Bit1&
+    lShiftBy1 = (value And Bits0To29) * Bit1
     '**************************************************************************
     ' Restore what was the 30th bit in Value to the 31st bit of the result.
-    If (value& And Bit30&) <> 0& Then
-        lShiftBy1& = lShiftBy1& Or UPPER_MASK&
+    If (value And Bit30) <> 0 Then
+        lShiftBy1 = lShiftBy1 Or UPPER_MASK
     End If
 End Function    'lShiftBy1
 
@@ -1268,18 +1268,18 @@ Private Function adder(ByVal num1 As Long, ByVal num2 As Long) As Long
 '******************************************************************************
     Dim carry_n As Long, shift_n As Long
     ' "Initialize" the local variables.
-    adder& = num1&
-    shift_n& = num2&
+    adder = num1
+    shift_n = num2
     '**************************************************************************
     ' Emulate Unsigned Binary Addition in three repeating steps.
-    Do While shift_n& <> 0&
+    Do While shift_n <> 0
         ' Generate The Carry Bits.
-        carry_n& = adder& And shift_n&
+        carry_n = adder And shift_n
         ' "Add" the two numbers.
-        adder& = adder& Xor shift_n&
+        adder = adder Xor shift_n
         ' Left Shift the carry bits by one.  Enough zeroes should be shifted
         '  into "shift_n" such that the loop will eventually terminate.
-        shift_n& = lShiftBy1&(carry_n&)
+        shift_n = lShiftBy1(carry_n)
     Loop
 End Function    'adder
 '******************************************************************************
@@ -1289,15 +1289,15 @@ Private Function rShiftBy30(ByVal value As Long) As Long
 ' This Function emulates an Unsigned Right Shift by 30 bits.
 '******************************************************************************
     ' Move the 30th bit to the zeroth bit position.
-    If (value& And Bit30&) <> 0& Then
-        rShiftBy30& = Bit0&
+    If (value And Bit30) <> 0 Then
+        rShiftBy30 = Bit0
     Else
-        rShiftBy30& = 0&
+        rShiftBy30 = 0
     End If
     '**************************************************************************
     ' "Save the sign bit" and move it to the first bit position.
-    If value& < 0& Then
-        rShiftBy30& = rShiftBy30& Or Bit1&
+    If value < 0 Then
+        rShiftBy30 = rShiftBy30 Or Bit1
     End If
 End Function    'rShiftBy30
 '******************************************************************************
@@ -1308,11 +1308,11 @@ Private Function rShiftBy6(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for the sign bit, then
     '  divide the result by (2^6).
-    rShiftBy6& = (value& And Bits6To30&) / Bit6&
+    rShiftBy6 = (value And Bits6To30) / Bit6
     '**************************************************************************
     ' "Save the sign bit" and move it to the 25th bit position.
-    If value& < 0& Then
-        rShiftBy6& = rShiftBy6& Or Bit25&
+    If value < 0 Then
+        rShiftBy6 = rShiftBy6 Or Bit25
     End If
 End Function    'rShiftBy6
 '******************************************************************************
@@ -1323,11 +1323,11 @@ Private Function rShiftBy5(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for the sign bit, then
     '  divide the result by (2^5).
-    rShiftBy5& = (value& And Bits5To30&) / Bit5&
+    rShiftBy5 = (value And Bits5To30) / Bit5
     '**************************************************************************
     ' "Save the sign bit" and move it to the 26th bit position.
-    If value& < 0& Then
-        rShiftBy5& = rShiftBy5& Or Bit26&
+    If value < 0 Then
+        rShiftBy5 = rShiftBy5 Or Bit26
     End If
 End Function    'rShiftBy5
 '******************************************************************************
@@ -1338,11 +1338,11 @@ Private Function rShiftBy1(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for the sign bit, then
     '  divide the result by (2^1).
-    rShiftBy1& = (value& And Bits1To30&) / Bit1&
+    rShiftBy1 = (value And Bits1To30) / Bit1
     '**************************************************************************
     ' "Save the sign bit" and move it to the 30th bit position.
-    If value& < 0& Then
-        rShiftBy1& = rShiftBy1& Or Bit30&
+    If value < 0 Then
+        rShiftBy1 = rShiftBy1 Or Bit30
     End If
 End Function    'rShiftBy1
 '******************************************************************************
@@ -1353,11 +1353,11 @@ Private Function lShiftBy2(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 29 (this is the
     '  sign bit of the result), then multiply by (2^2).
-    lShiftBy2& = (value& And Bits0To28&) * Bit2&
+    lShiftBy2 = (value And Bits0To28) * Bit2
     '**************************************************************************
     ' Restore what was the 29th bit in Value to the 31st bit of the result.
-    If (value& And Bit29&) <> 0& Then
-        lShiftBy2& = lShiftBy2& Or UPPER_MASK&
+    If (value And Bit29) <> 0 Then
+        lShiftBy2 = lShiftBy2 Or UPPER_MASK
     End If
 End Function    'lShiftBy2
 '******************************************************************************
@@ -1368,11 +1368,11 @@ Private Function lShiftBy3(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 28 (this is the
     '  sign bit of the result), then multiply by (2^3).
-    lShiftBy3& = (value& And Bits0To27&) * Bit3&
+    lShiftBy3 = (value And Bits0To27) * Bit3
     '**************************************************************************
     ' Restore what was the 28th bit in Value to the 31st bit of the result.
-    If (value& And Bit28&) <> 0& Then
-        lShiftBy3& = lShiftBy3& Or UPPER_MASK&
+    If (value And Bit28) <> 0 Then
+        lShiftBy3 = lShiftBy3 Or UPPER_MASK
     End If
 End Function    'lShiftBy3
 '******************************************************************************
@@ -1383,11 +1383,11 @@ Private Function lShiftBy5(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 26 (this is the
     '  sign bit of the result), then multiply by (2^5).
-    lShiftBy5& = (value& And Bits0To25&) * Bit5&
+    lShiftBy5 = (value And Bits0To25) * Bit5
     '**************************************************************************
     ' Restore what was the 26th bit in Value to the 31st bit of the result.
-    If (value& And Bit26&) <> 0& Then
-        lShiftBy5& = lShiftBy5& Or UPPER_MASK&
+    If (value And Bit26) <> 0 Then
+        lShiftBy5 = lShiftBy5 Or UPPER_MASK
     End If
 End Function    'lShiftBy5
 '******************************************************************************
@@ -1398,11 +1398,11 @@ Private Function lShiftBy6(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 25 (this is the
     '  sign bit of the result), then multiply by (2^6).
-    lShiftBy6& = (value& And Bits0To24&) * Bit6&
+    lShiftBy6 = (value And Bits0To24) * Bit6
     '**************************************************************************
     ' Restore what was the 25th bit in Value to the 31st bit of the result.
-    If (value& And Bit25&) <> 0& Then
-        lShiftBy6& = lShiftBy6& Or UPPER_MASK&
+    If (value And Bit25) <> 0 Then
+        lShiftBy6 = lShiftBy6 Or UPPER_MASK
     End If
 End Function    'lShiftBy6
 '******************************************************************************
@@ -1416,11 +1416,11 @@ Private Function lShiftBy8(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 23 (this is the
     '  sign bit of the result), then multiply by (2^8).
-    lShiftBy8& = (value& And Bits0To22&) * Bit8&
+    lShiftBy8 = (value And Bits0To22) * Bit8
     '**************************************************************************
     ' Restore what was the 23rd bit in Value to the 31st bit of the result.
-    If (value& And Bit23&) <> 0& Then
-        lShiftBy8& = lShiftBy8& Or UPPER_MASK&
+    If (value And Bit23) <> 0 Then
+        lShiftBy8 = lShiftBy8 Or UPPER_MASK
     End If
 End Function    'lShiftBy8
 '******************************************************************************
@@ -1431,11 +1431,11 @@ Private Function lShiftBy9(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 22 (this is the
     '  sign bit of the result), then multiply by (2^9).
-    lShiftBy9& = (value& And Bits0To21&) * Bit9&
+    lShiftBy9 = (value And Bits0To21) * Bit9
     '**************************************************************************
     ' Restore what was the 22rd bit in Value to the 31st bit of the result.
-    If (value& And Bit22&) <> 0& Then
-        lShiftBy9& = lShiftBy9& Or UPPER_MASK&
+    If (value And Bit22) <> 0 Then
+        lShiftBy9 = lShiftBy9 Or UPPER_MASK
     End If
 End Function    'lShiftBy9
 '******************************************************************************
@@ -1446,11 +1446,11 @@ Private Function lShiftBy10(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 21 (this is the
     '  sign bit of the result), then multiply by (2^10).
-    lShiftBy10& = (value& And Bits0To20&) * Bit10&
+    lShiftBy10 = (value And Bits0To20) * Bit10
     '**************************************************************************
     ' Restore what was the 21st bit in Value to the 31st bit of the result.
-    If (value& And Bit21&) <> 0& Then
-        lShiftBy10& = lShiftBy10& Or UPPER_MASK&
+    If (value And Bit21) <> 0 Then
+        lShiftBy10 = lShiftBy10 Or UPPER_MASK
     End If
 End Function    'lShiftBy10
 '******************************************************************************
@@ -1461,11 +1461,11 @@ Private Function lShiftBy11(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 20 (this is the
     '  sign bit of the result), then multiply by (2^11).
-    lShiftBy11& = (value& And Bits0To19&) * Bit11&
+    lShiftBy11 = (value And Bits0To19) * Bit11
     '**************************************************************************
     ' Restore what was the 20th bit in Value to the 31st bit of the result.
-    If (value& And Bit20&) <> 0& Then
-        lShiftBy11& = lShiftBy11& Or UPPER_MASK&
+    If (value And Bit20) <> 0 Then
+        lShiftBy11 = lShiftBy11 Or UPPER_MASK
     End If
 End Function    'lShiftBy11
 '******************************************************************************
@@ -1476,11 +1476,11 @@ Private Function lShiftBy13(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 18 (this is the
     '  sign bit of the result), then multiply by (2^13).
-    lShiftBy13& = (value& And Bits0To17&) * Bit13&
+    lShiftBy13 = (value And Bits0To17) * Bit13
     '**************************************************************************
     ' Restore what was the 18th bit in Value to the 31st bit of the result.
-    If (value& And Bit18&) <> 0& Then
-        lShiftBy13& = lShiftBy13& Or UPPER_MASK&
+    If (value And Bit18) <> 0 Then
+        lShiftBy13 = lShiftBy13 Or UPPER_MASK
     End If
 End Function    'lShiftBy13
 '******************************************************************************
@@ -1491,11 +1491,11 @@ Private Function lShiftBy14(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 17 (this is the
     '  sign bit of the result), then multiply by (2^14).
-    lShiftBy14& = (value& And Bits0To16&) * Bit14&
+    lShiftBy14 = (value And Bits0To16) * Bit14
     '**************************************************************************
     ' Restore what was the 17th bit in Value to the 31st bit of the result.
-    If (value& And Bit17&) <> 0& Then
-        lShiftBy14& = lShiftBy14& Or UPPER_MASK&
+    If (value And Bit17) <> 0 Then
+        lShiftBy14 = lShiftBy14 Or UPPER_MASK
     End If
 End Function    'lShiftBy14
 '******************************************************************************
@@ -1509,11 +1509,11 @@ Private Function lShiftBy16(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 15 (this is the
     '  sign bit of the result), then multiply by (2^16).
-    lShiftBy16& = (value& And Bits0To14&) * Bit16&
+    lShiftBy16 = (value And Bits0To14) * Bit16
     '**************************************************************************
     ' Restore what was the 15th bit in Value to the 31st bit of the result.
-    If (value& And Bit15&) <> 0& Then
-        lShiftBy16& = lShiftBy16& Or UPPER_MASK&
+    If (value And Bit15) <> 0 Then
+        lShiftBy16 = lShiftBy16 Or UPPER_MASK
     End If
 End Function    'lShiftBy16
 '******************************************************************************
@@ -1524,11 +1524,11 @@ Private Function lShiftBy17(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 14 (this is the
     '  sign bit of the result), then multiply by (2^17).
-    lShiftBy17& = (value& And Bits0To13&) * Bit17&
+    lShiftBy17 = (value And Bits0To13) * Bit17
     '**************************************************************************
     ' Restore what was the 14th bit in Value to the 31st bit of the result.
-    If (value& And Bit14&) <> 0& Then
-        lShiftBy17& = lShiftBy17& Or UPPER_MASK&
+    If (value And Bit14) <> 0 Then
+        lShiftBy17 = lShiftBy17 Or UPPER_MASK
     End If
 End Function    'lShiftBy17
 '******************************************************************************
@@ -1539,11 +1539,11 @@ Private Function lShiftBy18(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 13 (this is the
     '  sign bit of the result), then multiply by (2^18).
-    lShiftBy18& = (value& And Bits0To12&) * Bit18&
+    lShiftBy18 = (value And Bits0To12) * Bit18
     '**************************************************************************
     ' Restore what was the 13th bit in Value to the 31st bit of the result.
-    If (value& And Bit13&) <> 0& Then
-        lShiftBy18& = lShiftBy18& Or UPPER_MASK&
+    If (value And Bit13) <> 0 Then
+        lShiftBy18 = lShiftBy18 Or UPPER_MASK
     End If
 End Function    'lShiftBy18
 '******************************************************************************
@@ -1554,11 +1554,11 @@ Private Function lShiftBy19(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 12 (this is the
     '  sign bit of the result), then multiply by (2^19).
-    lShiftBy19& = (value& And Bits0To11&) * Bit19&
+    lShiftBy19 = (value And Bits0To11) * Bit19
     '**************************************************************************
     ' Restore what was the 12th bit in Value to the 31st bit of the result.
-    If (value& And Bit12&) <> 0& Then
-        lShiftBy19& = lShiftBy19& Or UPPER_MASK&
+    If (value And Bit12) <> 0 Then
+        lShiftBy19 = lShiftBy19 Or UPPER_MASK
     End If
 End Function    'lShiftBy19
 '******************************************************************************
@@ -1569,11 +1569,11 @@ Private Function lShiftBy20(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 11 (this is the
     '  sign bit of the result), then multiply by (2^20).
-    lShiftBy20& = (value& And Bits0To10&) * Bit20&
+    lShiftBy20 = (value And Bits0To10) * Bit20
     '**************************************************************************
     ' Restore what was the 12th bit in Value to the 31st bit of the result.
-    If (value& And Bit11&) <> 0& Then
-        lShiftBy20& = lShiftBy20& Or UPPER_MASK&
+    If (value And Bit11) <> 0 Then
+        lShiftBy20 = lShiftBy20 Or UPPER_MASK
     End If
 End Function    'lShiftBy20
 '******************************************************************************
@@ -1584,11 +1584,11 @@ Private Function lShiftBy22(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 22 (this is the
     '  sign bit of the result), then multiply by (2^9).
-    lShiftBy22& = (value& And Bits0To8&) * Bit22&
+    lShiftBy22 = (value And Bits0To8) * Bit22
     '**************************************************************************
     ' Restore what was the 9th bit in Value to the 31st bit of the result.
-    If (value& And Bit9&) <> 0& Then
-        lShiftBy22& = lShiftBy22& Or UPPER_MASK&
+    If (value And Bit9) <> 0 Then
+        lShiftBy22 = lShiftBy22 Or UPPER_MASK
     End If
 End Function    'lShiftBy22
 '******************************************************************************
@@ -1599,11 +1599,11 @@ Private Function lShiftBy24(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 7 (this is the
     '  sign bit of the result), then multiply by (2^24).
-    lShiftBy24& = (value& And Bits0To6&) * Bit24&
+    lShiftBy24 = (value And Bits0To6) * Bit24
     '**************************************************************************
     ' Restore what was the 7th bit in Value to the 31st bit of the result.
-    If (value& And Bit7&) <> 0& Then
-        lShiftBy24& = lShiftBy24& Or UPPER_MASK&
+    If (value And Bit7) <> 0 Then
+        lShiftBy24 = lShiftBy24 Or UPPER_MASK
     End If
 End Function    'lShiftBy24
 '******************************************************************************
@@ -1614,11 +1614,11 @@ Private Function lShiftBy26(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 5 (this is the
     '  sign bit of the result), then multiply by (2^26).
-    lShiftBy26& = (value& And Bits0To4&) * Bit26&
+    lShiftBy26 = (value And Bits0To4) * Bit26
     '**************************************************************************
     ' Restore what was the 5th bit in Value to the 31st bit of the result.
-    If (value& And Bit5&) <> 0& Then
-        lShiftBy26& = lShiftBy26& Or UPPER_MASK&
+    If (value And Bit5) <> 0 Then
+        lShiftBy26 = lShiftBy26 Or UPPER_MASK
     End If
 End Function    'lShiftBy26
 '******************************************************************************
@@ -1629,11 +1629,11 @@ Private Function lShiftBy27(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 4 (this is the
     '  sign bit of the result), then multiply by (2^27).
-    lShiftBy27& = (value& And Bits0To3&) * Bit27&
+    lShiftBy27 = (value And Bits0To3) * Bit27
     '**************************************************************************
     ' Restore what was the 4th bit in Value to the 31st bit of the result.
-    If (value& And Bit4&) <> 0& Then
-        lShiftBy27& = lShiftBy27& Or UPPER_MASK&
+    If (value And Bit4) <> 0 Then
+        lShiftBy27 = lShiftBy27 Or UPPER_MASK
     End If
 End Function    'lShiftBy27
 '******************************************************************************
@@ -1644,11 +1644,11 @@ Private Function lShiftBy28(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 3 (this is the
     '  sign bit of the result), then multiply by (2^28).
-    lShiftBy28& = (value& And Bits0To2&) * Bit28&
+    lShiftBy28 = (value And Bits0To2) * Bit28
     '**************************************************************************
     ' Restore what was the 3rd bit in Value to the 31st bit of the result.
-    If (value& And Bit3&) <> 0& Then
-        lShiftBy28& = lShiftBy28& Or UPPER_MASK&
+    If (value And Bit3) <> 0 Then
+        lShiftBy28 = lShiftBy28 Or UPPER_MASK
     End If
 End Function    'lShiftBy28
 '******************************************************************************
@@ -1659,11 +1659,11 @@ Private Function lShiftBy29(ByVal value As Long) As Long
 '******************************************************************************
     ' Mask all bits that will be preserved except for Bit 2 (this is the
     '  sign bit of the result), then multiply by (2^29).
-    lShiftBy29& = (value& And Bits0To1&) * Bit29&
+    lShiftBy29 = (value And Bits0To1) * Bit29
     '**************************************************************************
     ' Restore what was the 2nd bit in Value to the 31st bit of the result.
-    If (value& And Bit2&) <> 0& Then
-        lShiftBy29& = lShiftBy29& Or UPPER_MASK&
+    If (value And Bit2) <> 0 Then
+        lShiftBy29 = lShiftBy29 Or UPPER_MASK
     End If
 End Function    'lShiftBy29
 '******************************************************************************
@@ -1673,15 +1673,15 @@ Private Function lShiftBy30(ByVal value As Long) As Long
 ' This Function emulates an Unsigned Left Shift by 30 bits.
 '******************************************************************************
     ' Move the zeroth bit to the 30th bit position.
-    If (value& And Bit0&) <> 0& Then
-        lShiftBy30& = Bit30&
+    If (value And Bit0) <> 0 Then
+        lShiftBy30 = Bit30
     Else
-        lShiftBy30& = 0&
+        lShiftBy30 = 0
     End If
     '**************************************************************************
     ' Move the first bit to the "sign bit position".
-    If (value& And Bit1&) <> 0& Then
-        lShiftBy30& = lShiftBy30& Or UPPER_MASK&
+    If (value And Bit1) <> 0 Then
+        lShiftBy30 = lShiftBy30 Or UPPER_MASK
     End If
 End Function    'lShiftBy30
 '******************************************************************************
